@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface UserPhotoRepository extends MongoRepository<UserPhoto,String> {
+public interface UserPhotoRepository extends MongoRepository<UserPhoto, String> {
 
     Optional<UserPhoto> findFirstByUserId(Long id);
 
