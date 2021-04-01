@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class UserService {
 
-/*TODO fix exception while deserialized with photo field
-* */
+    /*TODO fix exception while deserialized with photo field
+     * */
     public User getUserFromJson(String json, MultipartFile file) throws JsonProcessingException {
         User user;
         ObjectMapper objectMapper = new ObjectMapper();
