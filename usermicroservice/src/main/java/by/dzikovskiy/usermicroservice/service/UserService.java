@@ -8,17 +8,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    /*TODO fix exception while deserialized with photo field
-     * */
     public User getUserFromJson(String json) throws JsonProcessingException {
         User user;
         ObjectMapper objectMapper = new ObjectMapper();
-        //  objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,true);
         user = objectMapper.readValue(json, User.class);
-
 
         return user;
     }
-
-
 }

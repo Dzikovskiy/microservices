@@ -38,11 +38,9 @@ public class UserController {
         return optionalUser.map(user -> {
             log.debug("Response with OK and user: " + user);
             return ResponseEntity.ok(user);
-
         }).orElseGet(() -> {
             log.debug("Response with HttpStatus.NOT_FOUND. User with given id not in the repository");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         });
-
     }
 }
