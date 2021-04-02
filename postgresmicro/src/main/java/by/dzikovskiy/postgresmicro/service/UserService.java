@@ -3,7 +3,6 @@ package by.dzikovskiy.postgresmicro.service;
 import by.dzikovskiy.postgresmicro.entity.User;
 import by.dzikovskiy.postgresmicro.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

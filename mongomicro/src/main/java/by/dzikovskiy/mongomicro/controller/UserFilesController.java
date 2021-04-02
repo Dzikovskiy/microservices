@@ -2,6 +2,7 @@ package by.dzikovskiy.mongomicro.controller;
 
 import by.dzikovskiy.mongomicro.entity.UserPhoto;
 import by.dzikovskiy.mongomicro.service.UserPhotoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/mongo")
+@Slf4j
 public class UserFilesController {
 
     @Autowired
@@ -24,6 +26,7 @@ public class UserFilesController {
     public ResponseEntity<?> saveUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
                                            @RequestParam("userId") Long id) {
         URI location = URI.create(String.format("/mongo/users/photos/%s", id));
+        log.debug("Method saveUserPhoto() called with id: " + id + " and userPhoto name: " + userPhoto.getName());
 
         try {
             userPhotoService.savePhoto(id, userPhoto);
@@ -31,14 +34,22 @@ public class UserFilesController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        log.debug("Photo saved to database");
         return ResponseEntity.created(location).build();
     }
 
     @GetMapping(value = "/users/photo/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getUserPhoto(@PathVariable Long id) {
+        log.debug("Method getUserPhoto() called with id: " + id);
         Optional<UserPhoto> optionalUserPhoto = userPhotoService.getPhoto(id);
-        return optionalUserPhoto.map(userPhoto ->
-                ResponseEntity.ok().body(userPhoto.getImage().getData()))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return optionalUserPhoto
+                .map(userPhoto -> {
+                    log.debug("Photo found with given id: " + id);
+                    return ResponseEntity.ok().body(userPhoto.getImage().getData());
+                })
+                .orElseGet(() -> {
+                    log.debug("Photo not found with given id: " + id);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                });
     }
 }

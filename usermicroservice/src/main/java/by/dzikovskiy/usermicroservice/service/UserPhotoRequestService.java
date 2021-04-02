@@ -1,7 +1,6 @@
 package by.dzikovskiy.usermicroservice.service;
 
 import by.dzikovskiy.usermicroservice.entity.HostProperties;
-import by.dzikovskiy.usermicroservice.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class UserPhotoRequestService {
                 .bodyToMono(Mono.class).block();
     }
 
-    public Mono<byte[]> get(Long userId){
+    public Mono<byte[]> get(Long userId) {
         return webClient.get()
                 .uri(mongoDbHost + "/users/photo/" + userId)
                 .accept(MediaType.IMAGE_JPEG)
