@@ -7,5 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class User {
     private long id;
     private String name;
-    private MultipartFile photo;
+  //  private MultipartFile photo;
 }

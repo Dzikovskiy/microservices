@@ -1,23 +1,25 @@
 package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.User;
+import by.dzikovskiy.usermicroservice.service.UserProfileRequestService;
 import by.dzikovskiy.usermicroservice.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class UserController {
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserProfileRequestService profileRequestService;
 
     @PostMapping(value = "/users", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
@@ -26,10 +28,12 @@ public class UserController {
         User parsedUser;
 
         try {
-            parsedUser = userService.getUserFromJson(user, file);
+            parsedUser = userService.getUserFromJson(user);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        parsedUser = profileRequestService.create(parsedUser).block();
 
         //request sending to micro-s and kafka
 
@@ -37,9 +41,10 @@ public class UserController {
         return ResponseEntity.created(location).body(parsedUser);
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<User> getUser() {
-        return ResponseEntity.ok().body(new User());
+    @GetMapping("/users/{id}")
+    public Mono<ResponseEntity<User>> getUser(@PathVariable Long id) {
+        return profileRequestService.get(id).map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/users/{id}/photo")

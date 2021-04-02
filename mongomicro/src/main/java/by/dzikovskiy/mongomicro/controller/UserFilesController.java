@@ -28,7 +28,7 @@ public class UserFilesController {
         try {
             userPhotoService.savePhoto(id, userPhoto);
         } catch (IOException e) {
-            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return ResponseEntity.created(location).build();
