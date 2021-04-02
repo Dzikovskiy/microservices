@@ -17,13 +17,13 @@ public class UserPhotoService {
     @Autowired
     private UserPhotoRepository userPhotoRepository;
 
-    public String savePhoto(Long userId, MultipartFile file) throws IOException {
+    public Long savePhoto(Long userId, MultipartFile file) throws IOException {
         UserPhoto userPhoto = new UserPhoto();
         userPhoto.setUserId(userId);
         userPhoto.setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
 
         userPhoto = userPhotoRepository.insert(userPhoto);
-        return userPhoto.getId();
+        return userPhoto.getUserId();
     }
 
     public Optional<UserPhoto> getPhoto(Long userId) {

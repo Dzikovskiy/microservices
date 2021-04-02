@@ -1,20 +1,28 @@
 package by.dzikovskiy.usermicroservice.service;
 
+import by.dzikovskiy.usermicroservice.entity.HostProperties;
 import by.dzikovskiy.usermicroservice.entity.User;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class UserProfileRequestService {
-    private final String postgresHost = "http://localhost:8083/postgres";
-
+    private final HostProperties hostProperties;
     private final WebClient webClient;
+    private final String postgresHost;
+
+    @Autowired
+    public UserProfileRequestService(HostProperties hostProperties, WebClient webClient) {
+        this.hostProperties = hostProperties;
+        this.webClient = webClient;
+        this.postgresHost = this.hostProperties.getPostgresMicroserviceHost();
+    }
+
 
     public Mono<User> create(User user) {
         return webClient.post()
