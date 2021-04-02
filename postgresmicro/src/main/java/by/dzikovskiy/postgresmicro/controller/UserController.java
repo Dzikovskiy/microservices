@@ -2,6 +2,7 @@ package by.dzikovskiy.postgresmicro.controller;
 
 import by.dzikovskiy.postgresmicro.entity.User;
 import by.dzikovskiy.postgresmicro.service.UserService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +16,9 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/postgres")
 @Slf4j
+@AllArgsConstructor
 public class UserController {
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
