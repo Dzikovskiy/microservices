@@ -1,19 +1,13 @@
 package by.dzikovskiy.postgresmicro.entity;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
 @Table(name = "users")
 public class User {
     @Id

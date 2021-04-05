@@ -1,17 +1,11 @@
 package by.dzikovskiy.postgresmicro.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
 @Table(name = "visas")
 public class Visa {
     @Id
