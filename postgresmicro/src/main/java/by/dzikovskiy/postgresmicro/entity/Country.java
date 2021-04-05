@@ -1,4 +1,5 @@
 package by.dzikovskiy.postgresmicro.entity;
 
-public class Passport {
+public enum Country {
+    BELARUS, USA, UK
 }

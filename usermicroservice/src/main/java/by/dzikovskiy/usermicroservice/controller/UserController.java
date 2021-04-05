@@ -63,5 +63,4 @@ public class UserController {
                         .body(bytes))
                 .defaultIfEmpty(ResponseEntity.notFound().build()).block();
     }
-
 }

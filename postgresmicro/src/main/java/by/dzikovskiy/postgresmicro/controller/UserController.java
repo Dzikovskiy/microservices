@@ -1,6 +1,6 @@
 package by.dzikovskiy.postgresmicro.controller;
 
-import by.dzikovskiy.postgresmicro.entity.User;
+import by.dzikovskiy.postgresmicro.entity.UserDto;
 import by.dzikovskiy.postgresmicro.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
         log.debug("Method createUser() called with user:" + user);
-        User result = userService.save(user);
+        UserDto result = userService.save(user);
         URI location = URI.create(String.format("/postgres/users/%s", result.getId()));
         log.debug("Response with location: " + location + " and user: " + result);
 
@@ -30,9 +30,9 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         log.debug("Method getUser() called with id: " + id);
-        Optional<User> optionalUser = userService.findById(id);
+        Optional<UserDto> optionalUser = userService.findById(id);
 
         return optionalUser.map(user -> {
             log.debug("Response with OK and user: " + user);
