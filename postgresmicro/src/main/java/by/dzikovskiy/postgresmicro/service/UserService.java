@@ -15,7 +15,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final VisaRepository visaRepository;
 
     public UserDto save(UserDto user) {
         User savedUser = userRepository.save(UserDtoMapper.USER_MAPPER.userDtoToUser(user));
