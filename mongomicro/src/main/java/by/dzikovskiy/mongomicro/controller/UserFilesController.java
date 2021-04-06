@@ -23,8 +23,8 @@ public class UserFilesController {
     private UserPhotoService userPhotoService;
 
     @PostMapping("/users/photo")
-    public ResponseEntity<?> saveUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
-                                           @RequestParam("userId") Long id) {
+    public ResponseEntity<HttpStatus> saveUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
+                                                    @RequestParam("userId") final Long id) {
         URI location = URI.create(String.format("/mongo/users/photos/%s", id));
         log.debug("Method saveUserPhoto() called with id: " + id + " and userPhoto name: " + userPhoto.getName());
 
@@ -39,13 +39,30 @@ public class UserFilesController {
     }
 
     @GetMapping(value = "/users/photo/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getUserPhoto(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getUserPhoto(@PathVariable final Long id) {
         log.debug("Method getUserPhoto() called with id: " + id);
         Optional<UserPhoto> optionalUserPhoto = userPhotoService.getPhoto(id);
         return optionalUserPhoto
                 .map(userPhoto -> {
                     log.debug("Photo found with given id: " + id);
                     return ResponseEntity.ok().body(userPhoto.getImage().getData());
+                })
+                .orElseGet(() -> {
+                    log.debug("Photo not found with given id: " + id);
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                });
+    }
+
+    @DeleteMapping("/users/photo/{id}")
+    public ResponseEntity<HttpStatus> deletePhotoByUserId(@PathVariable final Long id) {
+        log.debug("Method deletePhotoByUserId() called with id: " + id);
+        Optional<UserPhoto> optionalUserPhoto = userPhotoService.getPhoto(id);
+
+        return optionalUserPhoto
+                .map(userPhoto -> {
+                    log.debug("Photo found with given id: " + id);
+                    userPhotoService.deletePhotoById(id);
+                    return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
                 })
                 .orElseGet(() -> {
                     log.debug("Photo not found with given id: " + id);

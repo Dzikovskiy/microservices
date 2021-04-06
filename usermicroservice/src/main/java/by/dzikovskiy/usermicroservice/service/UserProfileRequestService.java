@@ -46,6 +46,6 @@ public class UserProfileRequestService {
         return webClient.delete()
                 .uri(postgresHost+"/users/"+id)
                 .exchange()
-                .map(ClientResponse::statusCode);
+                .map(ClientResponse::statusCode).defaultIfEmpty(HttpStatus.NOT_FOUND);
     }
 }

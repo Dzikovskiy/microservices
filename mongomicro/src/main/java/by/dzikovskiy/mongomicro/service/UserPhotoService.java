@@ -16,7 +16,7 @@ import java.util.Optional;
 public class UserPhotoService {
     private final UserPhotoRepository userPhotoRepository;
 
-    public long savePhoto(Long userId, MultipartFile file) throws IOException {
+    public long savePhoto(final Long userId, MultipartFile file) throws IOException {
         UserPhoto userPhoto = new UserPhoto();
         userPhoto.setUserId(userId);
         userPhoto.setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
@@ -25,7 +25,11 @@ public class UserPhotoService {
         return userPhoto.getUserId();
     }
 
-    public Optional<UserPhoto> getPhoto(Long userId) {
+    public Optional<UserPhoto> getPhoto(final Long userId) {
         return userPhotoRepository.findFirstByUserId(userId);
+    }
+
+    public void deletePhotoById(final Long id) {
+        userPhotoRepository.deleteByUserId(id);
     }
 }

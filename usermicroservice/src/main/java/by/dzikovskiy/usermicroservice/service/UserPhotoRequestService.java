@@ -10,6 +10,7 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -53,6 +54,13 @@ public class UserPhotoRequestService {
                 .onStatus(HttpStatus.NOT_FOUND::equals,
                         clientResponse -> Mono.empty())
                 .bodyToMono(byte[].class);
+    }
+
+    public Mono<HttpStatus> delete(Long id){
+        return webClient.delete()
+                .uri(mongoDbHost+"/users/photo/"+id)
+                .exchange()
+                .map(ClientResponse::statusCode).defaultIfEmpty(HttpStatus.NOT_FOUND);
     }
 
 }

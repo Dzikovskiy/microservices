@@ -65,8 +65,14 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable final Long id){
-        HttpStatus status = profileRequestService.delete(id).map(response );
-        return
+    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable final Long id) {
+        HttpStatus statusProfile = profileRequestService.delete(id).block();
+        photoRequestService.delete(id).block();
+
+        if (statusProfile.equals(HttpStatus.NOT_FOUND)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
