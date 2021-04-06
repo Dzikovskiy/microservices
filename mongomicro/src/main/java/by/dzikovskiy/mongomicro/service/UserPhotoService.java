@@ -32,4 +32,13 @@ public class UserPhotoService {
     public void deletePhotoById(final Long id) {
         userPhotoRepository.deleteByUserId(id);
     }
+
+    public void update(final Long userId, MultipartFile file) throws IOException {
+        Optional<UserPhoto> optionalUserPhoto = userPhotoRepository.findFirstByUserId(userId);
+
+        optionalUserPhoto.get().setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+
+        userPhotoRepository.deleteByUserId(userId);
+        userPhotoRepository.save(optionalUserPhoto.get());
+    }
 }

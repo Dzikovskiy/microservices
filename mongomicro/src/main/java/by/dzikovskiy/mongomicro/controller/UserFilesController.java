@@ -60,7 +60,7 @@ public class UserFilesController {
 
         return optionalUserPhoto
                 .map(userPhoto -> {
-                    log.debug("Photo found with given id: " + id);
+                    log.debug("Photo deleted with given id: " + id);
                     userPhotoService.deletePhotoById(id);
                     return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
                 })
@@ -68,5 +68,28 @@ public class UserFilesController {
                     log.debug("Photo not found with given id: " + id);
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 });
+    }
+
+    @PutMapping("/users/photo")
+    public ResponseEntity<HttpStatus> updateUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
+                                                      @RequestParam("userId") final Long id) {
+        Optional<UserPhoto> optionalPhoto = userPhotoService.getPhoto(id);
+
+        return optionalPhoto.map(photo -> {
+            try {
+                userPhotoService.update(id, userPhoto);
+            } catch (IOException e) {
+                log.error("Exception while photo saving" + e.getMessage());
+                return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            log.debug("Response with OK. Photo with the given id has updated");
+            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+        }).orElseGet(() -> {
+            log.debug("Response with HttpStatus.NOT_FOUND. Photo with the given id is not in the repository");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        });
+
+
     }
 }

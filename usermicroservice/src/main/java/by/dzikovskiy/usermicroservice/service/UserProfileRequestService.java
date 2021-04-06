@@ -42,9 +42,9 @@ public class UserProfileRequestService {
                 .bodyToMono(User.class);
     }
 
-    public Mono<HttpStatus> delete(Long id){
+    public Mono<HttpStatus> delete(Long id) {
         return webClient.delete()
-                .uri(postgresHost+"/users/"+id)
+                .uri(postgresHost + "/users/" + id)
                 .exchange()
                 .map(ClientResponse::statusCode).defaultIfEmpty(HttpStatus.NOT_FOUND);
     }

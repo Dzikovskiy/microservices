@@ -56,9 +56,9 @@ public class UserPhotoRequestService {
                 .bodyToMono(byte[].class);
     }
 
-    public Mono<HttpStatus> delete(Long id){
+    public Mono<HttpStatus> delete(Long id) {
         return webClient.delete()
-                .uri(mongoDbHost+"/users/photo/"+id)
+                .uri(mongoDbHost + "/users/photo/" + id)
                 .exchange()
                 .map(ClientResponse::statusCode).defaultIfEmpty(HttpStatus.NOT_FOUND);
     }
