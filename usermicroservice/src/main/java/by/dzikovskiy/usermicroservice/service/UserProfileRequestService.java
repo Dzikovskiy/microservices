@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -39,5 +40,12 @@ public class UserProfileRequestService {
                 .onStatus(HttpStatus.NOT_FOUND::equals,
                         clientResponse -> Mono.empty())
                 .bodyToMono(User.class);
+    }
+
+    public Mono<HttpStatus> delete(Long id){
+        return webClient.delete()
+                .uri(postgresHost+"/users/"+id)
+                .exchange()
+                .map(ClientResponse::statusCode);
     }
 }

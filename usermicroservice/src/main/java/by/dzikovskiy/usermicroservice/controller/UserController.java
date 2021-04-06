@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping(value = "/users", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<User> createUser(@RequestPart("user") String user, @RequestPart("file") MultipartFile file) throws IOException {
+    public ResponseEntity<User> createUser(@RequestPart("user") final String user, @RequestPart("file") MultipartFile file) throws IOException {
         User parsedUser;
 
         try {
@@ -49,18 +49,24 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Mono<ResponseEntity<User>> getUser(@PathVariable Long id) {
+    public Mono<ResponseEntity<User>> getUser(@PathVariable final Long id) {
         return profileRequestService.get(id).map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/users/{id}/photo")
-    public ResponseEntity<byte[]> getUserPhoto(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getUserPhoto(@PathVariable final Long id) {
         return photoRequestService.get(id)
                 .map(bytes -> ResponseEntity
                         .ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(bytes))
                 .defaultIfEmpty(ResponseEntity.notFound().build()).block();
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable final Long id){
+        HttpStatus status = profileRequestService.delete(id).map(response );
+        return
     }
 }
