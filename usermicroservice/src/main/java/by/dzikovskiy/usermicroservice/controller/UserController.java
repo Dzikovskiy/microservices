@@ -3,8 +3,6 @@ package by.dzikovskiy.usermicroservice.controller;
 import by.dzikovskiy.usermicroservice.entity.User;
 import by.dzikovskiy.usermicroservice.service.UserPhotoRequestService;
 import by.dzikovskiy.usermicroservice.service.UserProfileRequestService;
-import by.dzikovskiy.usermicroservice.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,67 +10,80 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
 @Slf4j
 public class UserController {
-    private final UserService userService;
     private final UserProfileRequestService profileRequestService;
     private final UserPhotoRequestService photoRequestService;
 
-    @PostMapping(value = "/users", consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<User> createUser(@RequestPart("user") final String user, @RequestPart("file") MultipartFile file) throws IOException {
-        User parsedUser;
+    @PostMapping("/users")
+    public ResponseEntity<User> createUserProfile(@RequestBody final User user) {
+        Optional<User> optionalUser = profileRequestService.create(user);
 
-        try {
-            parsedUser = userService.getUserFromJson(user);
-        } catch (JsonProcessingException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.badRequest().build();
         }
-
-        parsedUser = profileRequestService.create(parsedUser).block();
-
-        photoRequestService.save(file, parsedUser.getId());
 
         //request sending to micro-s and kafka
 
-        URI location = URI.create(String.format("/api/users/%s", parsedUser.getId()));
-        return ResponseEntity.created(location).body(parsedUser);
+        URI location = URI.create(String.format("/api/users/%s", optionalUser.get().getId()));
+        return ResponseEntity.created(location).body(optionalUser.get());
+    }
+
+    @PostMapping(value = "/users/{id}/photo")
+    public ResponseEntity<HttpStatus> saveUserPhoto(@PathVariable final Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        Optional<User> optionalUser = profileRequestService.get(id);
+        log.debug("Method saveUserPhoto() called with id: " + id);
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        HttpStatus status = photoRequestService.save(file, id);
+
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/users/{id}")
-    public Mono<ResponseEntity<User>> getUser(@PathVariable final Long id) {
-        return profileRequestService.get(id).map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public ResponseEntity<User> getUser(@PathVariable final Long id) {
+        Optional<User> optionalUser = profileRequestService.get(id);
+
+        return optionalUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/users/{id}/photo")
+    @GetMapping(value = "/users/{id}/photo", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getUserPhoto(@PathVariable final Long id) {
-        return photoRequestService.get(id)
-                .map(bytes -> ResponseEntity
-                        .ok()
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(bytes))
-                .defaultIfEmpty(ResponseEntity.notFound().build()).block();
+        Optional<byte[]> optionalPhoto = photoRequestService.get(id);
+
+        return optionalPhoto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateUserProfile(@RequestBody final User user) {
+        Optional<User> optionalUser = profileRequestService.update(user);
+
+        return optionalUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping(value = "/users/{id}/photo")
+    public ResponseEntity<HttpStatus> updateUserPhoto(@PathVariable final Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        log.debug("Method updateUserPhoto() called with id: " + id);
+
+        HttpStatus status = photoRequestService.update(file, id);
+
+        return new ResponseEntity<>(status);
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<HttpStatus> deleteUserById(@PathVariable final Long id) {
-        HttpStatus statusProfile = profileRequestService.delete(id).block();
-        photoRequestService.delete(id).block();
-
-        if (statusProfile.equals(HttpStatus.NOT_FOUND)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public void deleteUserById(@PathVariable final Long id) {
+        photoRequestService.delete(id);
+        profileRequestService.delete(id);
     }
 }

@@ -22,9 +22,9 @@ public class UserFilesController {
     @Autowired
     private UserPhotoService userPhotoService;
 
-    @PostMapping("/users/photo")
+    @PostMapping("/users/photo/{id}")
     public ResponseEntity<HttpStatus> saveUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
-                                                    @RequestParam("userId") final Long id) {
+                                                    @PathVariable("id") final Long id) {
         URI location = URI.create(String.format("/mongo/users/photos/%s", id));
         log.debug("Method saveUserPhoto() called with id: " + id + " and userPhoto name: " + userPhoto.getName());
 
@@ -70,9 +70,9 @@ public class UserFilesController {
                 });
     }
 
-    @PutMapping("/users/photo")
+    @PutMapping("/users/photo/{id}")
     public ResponseEntity<HttpStatus> updateUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
-                                                      @RequestParam("userId") final Long id) {
+                                                      @PathVariable final Long id) {
         Optional<UserPhoto> optionalPhoto = userPhotoService.getPhoto(id);
 
         return optionalPhoto.map(photo -> {
@@ -89,7 +89,5 @@ public class UserFilesController {
             log.debug("Response with HttpStatus.NOT_FOUND. Photo with the given id is not in the repository");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         });
-
-
     }
 }

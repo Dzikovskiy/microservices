@@ -43,7 +43,7 @@ public class UserController {
         });
     }
 
-    @PutMapping("/users")
+    @PutMapping("/users/{id}")
     public ResponseEntity<UserDto> updateUser(@RequestBody final UserDto user) {
         log.debug("Method updateUser() called with id: " + user.getId());
         Optional<UserDto> optionalUser = userService.findById(user.getId());

@@ -21,6 +21,7 @@ public class UserPhotoService {
         userPhoto.setUserId(userId);
         userPhoto.setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
 
+        userPhotoRepository.deleteByUserId(userPhoto.getUserId());
         userPhoto = userPhotoRepository.insert(userPhoto);
         return userPhoto.getUserId();
     }

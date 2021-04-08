@@ -4,63 +4,88 @@ import by.dzikovskiy.usermicroservice.entity.HostProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class UserPhotoRequestService {
     private final HostProperties hostProperties;
-    private final WebClient webClient;
+    private final RestTemplate restTemplate;
     private final String mongoDbHost;
+    private final String userUrl = "/users/photo/";
 
     @Autowired
-    public UserPhotoRequestService(HostProperties hostProperties, WebClient webClient) {
+    public UserPhotoRequestService(HostProperties hostProperties, RestTemplate restTemplate) {
         this.hostProperties = hostProperties;
-        this.webClient = webClient;
+        this.restTemplate = restTemplate;
         this.mongoDbHost = this.hostProperties.getMongoDbMicroserviceHost();
     }
 
-    public void save(MultipartFile file, Long userId) throws IOException {
-        MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-        bodyBuilder.part("userPhoto", file.getBytes()).header("Content-Disposition", "form-data; name=userPhoto; filename=" + file.getName());
-        bodyBuilder.part("userId", userId);
+    public HttpStatus save(MultipartFile file, Long userId) throws IOException {
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = buildRequestEntity(file);
 
-        webClient.post()
-                .uri(mongoDbHost + "/users/photo")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
-                .retrieve()
-                .onStatus(HttpStatus.BAD_REQUEST::equals,
-                        status -> Mono.empty())
-                .bodyToMono(Mono.class).block();
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(mongoDbHost + userUrl + userId, requestEntity, String.class);
+
+        return response.getStatusCode();
     }
 
-    public Mono<byte[]> get(Long userId) {
-        return webClient.get()
-                .uri(mongoDbHost + "/users/photo/" + userId)
-                .accept(MediaType.IMAGE_JPEG)
-                .retrieve()
-                .onStatus(HttpStatus.NOT_FOUND::equals,
-                        clientResponse -> Mono.empty())
-                .bodyToMono(byte[].class);
+    public Optional<byte[]> get(Long userId) {
+        byte[] photo;
+
+        try {
+            photo = restTemplate.getForObject(mongoDbHost + userUrl + userId, byte[].class);
+        } catch (HttpClientErrorException e) {
+            return Optional.empty();
+        }
+
+        return Optional.of(photo);
     }
 
-    public Mono<HttpStatus> delete(Long id) {
-        return webClient.delete()
-                .uri(mongoDbHost + "/users/photo/" + id)
-                .exchange()
-                .map(ClientResponse::statusCode).defaultIfEmpty(HttpStatus.NOT_FOUND);
+    public HttpStatus update(MultipartFile file, Long userId) throws IOException {
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = buildRequestEntity(file);
+
+        ResponseEntity<Void> response;
+        try {
+            response = restTemplate.exchange(mongoDbHost + userUrl + userId,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    Void.class);
+        } catch (HttpClientErrorException e) {
+            return HttpStatus.BAD_REQUEST;
+        }
+
+        return response.getStatusCode();
     }
 
+    public void delete(Long id) {
+        restTemplate.delete(mongoDbHost + userUrl + id);
+    }
+
+    private HttpEntity<MultiValueMap<String, Object>> buildRequestEntity(MultipartFile file) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        LinkedMultiValueMap<String, String> photoHeaderMap = new LinkedMultiValueMap<>();
+        photoHeaderMap.add("Content-disposition", "form-data; name=userPhoto; filename=" + file.getOriginalFilename());
+        photoHeaderMap.add("Content-type", "image/jpeg");
+
+        HttpEntity<byte[]> photo = new HttpEntity<>(file.getBytes(), photoHeaderMap);
+
+        MultiValueMap<String, Object> body
+                = new LinkedMultiValueMap<>();
+        body.add("userPhoto", photo);
+
+        return new HttpEntity<>(body, headers);
+    }
 }
