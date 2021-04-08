@@ -19,10 +19,10 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class UserPhotoRequestService {
+    private static final String USER_URL = "/users/photo/";
     private final HostProperties hostProperties;
     private final RestTemplate restTemplate;
     private final String mongoDbHost;
-    private static final String USER_URL = "/users/photo/";
 
     @Autowired
     public UserPhotoRequestService(HostProperties hostProperties, RestTemplate restTemplate) {
@@ -71,7 +71,7 @@ public class UserPhotoRequestService {
     public void delete(Long id) {
         try {
             restTemplate.delete(mongoDbHost + USER_URL + id);
-        }catch (HttpClientErrorException e){
+        } catch (HttpClientErrorException e) {
             log.error(e.getMessage());
         }
     }

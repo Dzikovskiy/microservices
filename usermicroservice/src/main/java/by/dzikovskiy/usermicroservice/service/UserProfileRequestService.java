@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -30,8 +29,7 @@ public class UserProfileRequestService {
     }
 
     public Optional<User> create(User user) {
-        ResponseEntity<User> responseUser ;
-
+        ResponseEntity<User> responseUser;
         try {
             responseUser = restTemplate.postForEntity(postgresHost + "/users", user, User.class);
         } catch (HttpClientErrorException e) {
@@ -53,19 +51,25 @@ public class UserProfileRequestService {
     }
 
     public Optional<User> update(User user) {
-        ResponseEntity<User> responseUser = restTemplate.exchange(postgresHost + "/users/{id}",
-                HttpMethod.PUT,
-                new HttpEntity<>(user),
-                User.class,
-                Long.toString(user.getId()));
-
-        if (responseUser.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+        ResponseEntity<User> responseUser;
+        try {
+            responseUser = restTemplate.exchange(postgresHost + "/users/{id}",
+                    HttpMethod.PUT,
+                    new HttpEntity<>(user),
+                    User.class,
+                    Long.toString(user.getId()));
+        } catch (HttpClientErrorException e) {
             return Optional.empty();
         }
+
         return Optional.of(responseUser.getBody());
     }
 
     public void delete(Long id) {
-        restTemplate.delete(postgresHost + "/users/" + id);
+        try {
+            restTemplate.delete(postgresHost + "/users/" + id);
+        } catch (HttpClientErrorException e) {
+            log.error(e.getMessage());
+        }
     }
 }
