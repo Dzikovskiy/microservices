@@ -30,12 +30,15 @@ public class UserProfileRequestService {
     }
 
     public Optional<User> create(User user) {
-        ResponseEntity<User> responseUser = restTemplate.postForEntity(postgresHost + "/users", user, User.class);
+        ResponseEntity<User> responseUser ;
 
-        if (responseUser.getStatusCode().equals(HttpStatus.CREATED)) {
-            return Optional.of(responseUser.getBody());
+        try {
+            responseUser = restTemplate.postForEntity(postgresHost + "/users", user, User.class);
+        } catch (HttpClientErrorException e) {
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        return Optional.of(responseUser.getBody());
     }
 
     public Optional<User> get(Long id) {
@@ -55,7 +58,6 @@ public class UserProfileRequestService {
                 new HttpEntity<>(user),
                 User.class,
                 Long.toString(user.getId()));
-
 
         if (responseUser.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
             return Optional.empty();

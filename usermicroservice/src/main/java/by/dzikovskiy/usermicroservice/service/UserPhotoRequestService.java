@@ -22,7 +22,7 @@ public class UserPhotoRequestService {
     private final HostProperties hostProperties;
     private final RestTemplate restTemplate;
     private final String mongoDbHost;
-    private final String userUrl = "/users/photo/";
+    private static final String USER_URL = "/users/photo/";
 
     @Autowired
     public UserPhotoRequestService(HostProperties hostProperties, RestTemplate restTemplate) {
@@ -35,7 +35,7 @@ public class UserPhotoRequestService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = buildRequestEntity(file);
 
         ResponseEntity<String> response = restTemplate
-                .postForEntity(mongoDbHost + userUrl + userId, requestEntity, String.class);
+                .postForEntity(mongoDbHost + USER_URL + userId, requestEntity, String.class);
 
         return response.getStatusCode();
     }
@@ -44,7 +44,7 @@ public class UserPhotoRequestService {
         byte[] photo;
 
         try {
-            photo = restTemplate.getForObject(mongoDbHost + userUrl + userId, byte[].class);
+            photo = restTemplate.getForObject(mongoDbHost + USER_URL + userId, byte[].class);
         } catch (HttpClientErrorException e) {
             return Optional.empty();
         }
@@ -57,7 +57,7 @@ public class UserPhotoRequestService {
 
         ResponseEntity<Void> response;
         try {
-            response = restTemplate.exchange(mongoDbHost + userUrl + userId,
+            response = restTemplate.exchange(mongoDbHost + USER_URL + userId,
                     HttpMethod.PUT,
                     requestEntity,
                     Void.class);
@@ -69,7 +69,11 @@ public class UserPhotoRequestService {
     }
 
     public void delete(Long id) {
-        restTemplate.delete(mongoDbHost + userUrl + id);
+        try {
+            restTemplate.delete(mongoDbHost + USER_URL + id);
+        }catch (HttpClientErrorException e){
+            log.error(e.getMessage());
+        }
     }
 
     private HttpEntity<MultiValueMap<String, Object>> buildRequestEntity(MultipartFile file) throws IOException {
