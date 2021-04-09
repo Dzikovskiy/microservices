@@ -20,7 +20,6 @@ public class UserProfileRequestService {
     private final RestTemplate restTemplate;
     private final String postgresHost;
 
-
     @Autowired
     public UserProfileRequestService(HostProperties hostProperties, RestTemplate restTemplate) {
         this.hostProperties = hostProperties;

@@ -3,7 +3,6 @@ package by.dzikovskiy.mongomicro.controller;
 import by.dzikovskiy.mongomicro.service.UserServiceGridFs;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.Binary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/mongo")
@@ -40,8 +38,8 @@ public class UserFilesController {
     @GetMapping(value = "/users/photo/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getUserPhoto(@PathVariable final Long id) throws IOException {
         log.debug("Method getUserPhoto() called with id: " + id);
-        Optional<Binary> optionalPhoto = serviceGridFs.getPhoto(id);
-        return optionalPhoto
+
+        return serviceGridFs.getPhoto(id)
                 .map(userPhoto -> {
                     log.debug("Photo found with given id: " + id);
                     return ResponseEntity.ok().body(userPhoto.getData());
@@ -55,9 +53,8 @@ public class UserFilesController {
     @PutMapping("/users/photo/{id}")
     public ResponseEntity<HttpStatus> updateUserPhoto(@RequestParam("userPhoto") MultipartFile userPhoto,
                                                       @PathVariable final Long id) throws IOException {
-        Optional<Binary> optionalPhoto = serviceGridFs.getPhoto(id);
 
-        return optionalPhoto.map(photo -> {
+        return serviceGridFs.getPhoto(id).map(photo -> {
             try {
                 serviceGridFs.save(id, userPhoto);
             } catch (IOException e) {
@@ -76,9 +73,8 @@ public class UserFilesController {
     @DeleteMapping("/users/photo/{id}")
     public ResponseEntity<HttpStatus> deletePhotoByUserId(@PathVariable final Long id) throws IOException {
         log.debug("Method deletePhotoByUserId() called with id: " + id);
-        Optional<Binary> optionalUserPhoto = serviceGridFs.getPhoto(id);
 
-        return optionalUserPhoto
+        return serviceGridFs.getPhoto(id)
                 .map(userPhoto -> {
                     log.debug("Photo deleted with given id: " + id);
                     serviceGridFs.delete(id);

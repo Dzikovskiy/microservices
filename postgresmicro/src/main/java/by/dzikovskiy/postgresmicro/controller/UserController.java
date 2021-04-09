@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/postgres")
@@ -24,17 +23,16 @@ public class UserController {
         log.debug("Method createUser() called with user:" + user);
         UserDto result = userService.save(user);
         URI location = URI.create(String.format("/postgres/users/%s", result.getId()));
-        log.debug("Response with location: " + location + " and user: " + result);
 
+        log.debug("Response with location: " + location + " and user: " + result);
         return ResponseEntity.created(location).body(result);
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable final Long id) {
         log.debug("Method getUser() called with id: " + id);
-        Optional<UserDto> optionalUser = userService.findById(id);
 
-        return optionalUser.map(user -> {
+        return userService.findById(id).map(user -> {
             log.debug("Response with OK and user: " + user);
             return ResponseEntity.ok(user);
         }).orElseGet(() -> {
@@ -46,11 +44,9 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<UserDto> updateUser(@RequestBody final UserDto user) {
         log.debug("Method updateUser() called with id: " + user.getId());
-        Optional<UserDto> optionalUser = userService.findById(user.getId());
 
-        return optionalUser.map(userDto -> {
+        return userService.findById(user.getId()).map(userDto -> {
             userService.update(user);
-
             log.debug("Response with OK and user: " + user);
             return ResponseEntity.ok(user);
         }).orElseGet(() -> {
@@ -62,14 +58,15 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable final Long id) {
         log.debug("Method deleteUser() called with id: " + id);
-        Optional<UserDto> optionalUser = userService.findById(id);
-        if (!optionalUser.isPresent()) {
-            log.debug("Response with NOT_FOUND. User with the given id is not in the repository");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
-        userService.deleteById(id);
-        log.debug("Response with NO_CONTENT. User deleted successfully");
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return userService.findById(id)
+                .map(user -> {
+                    userService.deleteById(id);
+                    log.debug("Response with NO_CONTENT. User deleted successfully");
+                    return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+                }).orElseGet(() -> {
+                    log.debug("Response with NOT_FOUND. User with the given id is not in the repository");
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                });
     }
 }
