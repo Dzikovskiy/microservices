@@ -19,8 +19,8 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class UserServiceGridFs {
-    private final GridFsTemplate gridFsTemplate;
     private static final String USER_ID_METADATA_CRITERIA = "metadata.userId";
+    private final GridFsTemplate gridFsTemplate;
 
     public void save(final Long userId, MultipartFile file) throws IOException {
         DBObject metaData = new BasicDBObject();

@@ -2,7 +2,6 @@ package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.BalanceSnapshot;
 import by.dzikovskiy.usermicroservice.service.BalanceReportGenerator;
-import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,10 +16,8 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@AllArgsConstructor
 public class BalanceController {
     private final String filename = "snapshot.csv";
-    private final BalanceReportGenerator reportGenerator;
 
     @GetMapping(value = "/balance/csv", produces = "text/csv")
     public ResponseEntity generateCsv(@RequestBody List<BalanceSnapshot> snapshots) {

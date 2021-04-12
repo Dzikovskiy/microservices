@@ -1,6 +1,7 @@
 package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.User;
+import by.dzikovskiy.usermicroservice.service.AuditService;
 import by.dzikovskiy.usermicroservice.service.UserPhotoRequestService;
 import by.dzikovskiy.usermicroservice.service.UserProfileRequestService;
 import lombok.AllArgsConstructor;
@@ -21,35 +22,45 @@ import java.net.URI;
 public class UserController {
     private final UserProfileRequestService profileRequestService;
     private final UserPhotoRequestService photoRequestService;
+    private final AuditService audit;
 
     @PostMapping("/users")
     public ResponseEntity<User> createUserProfile(@RequestBody final User user) {
+        audit.save("Method createUserProfile() called with user: " + user);
         return profileRequestService.create(user)
-                .map(_user -> ResponseEntity
-                        .created(URI.create(String.format("/api/users/%s", _user.getId())))
-                        .body(_user))
-                .orElse(ResponseEntity.badRequest()
-                        .build());
+                .map(_user -> {
+                    audit.save("User saved to database user: " + user);
+                    return ResponseEntity
+                            .created(URI.create(String.format("/api/users/%s", _user.getId())))
+                            .body(_user);
+                })
+                .orElseGet(() -> {
+                    audit.save("User not saved to database, Bad Request");
+                    return ResponseEntity.badRequest()
+                            .build();
+                });
     }
 
     @PostMapping(value = "/users/{id}/photo")
     public ResponseEntity<HttpStatus> saveUserPhoto(@PathVariable final Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        log.debug("Method saveUserPhoto() called with id: " + id);
+        audit.save("Method saveUserPhoto() called with id: " + id);
         return profileRequestService.get(id).map(user -> {
             HttpStatus status;
             try {
                 status = photoRequestService.save(file, id);
             } catch (IOException e) {
-                log.debug(e.getMessage());
+                audit.save(e.getMessage());
                 return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
             }
 
+            audit.save("Photo saved to database with user id: " + id);
             return new ResponseEntity<HttpStatus>(status);
         }).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable final Long id) {
+        audit.save("Method getUser() called with id: " + id);
         return profileRequestService.get(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -57,6 +68,7 @@ public class UserController {
 
     @GetMapping(value = "/users/{id}/photo", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getUserPhoto(@PathVariable final Long id) {
+        audit.save("Method getUserPhoto() called with id: " + id);
         return photoRequestService.get(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -64,6 +76,7 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUserProfile(@RequestBody final User user) {
+        audit.save("Method updateUserProfile() called with user: " + user);
         return profileRequestService.update(user)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -71,13 +84,13 @@ public class UserController {
 
     @PutMapping(value = "/users/{id}/photo")
     public ResponseEntity<HttpStatus> updateUserPhoto(@PathVariable final Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        log.debug("Method updateUserPhoto() called with id: " + id);
-
+        audit.save("Method updateUserPhoto() called with id: " + id);
         return new ResponseEntity<>(photoRequestService.update(file, id));
     }
 
     @DeleteMapping("/users/{id}")
     public void deleteUserById(@PathVariable final Long id) {
+        audit.save("Method deleteUserById() called with id: " + id);
         photoRequestService.delete(id);
         profileRequestService.delete(id);
     }
