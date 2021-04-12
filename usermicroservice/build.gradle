@@ -1,0 +1,36 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter:2.4.4'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.4.4'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.4.4'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.apache.commons:commons-csv:1.8'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.4.4'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.4.4'
+}
+
+group = 'by.dzikovskiy'
+version = '0.0.1-SNAPSHOT'
+description = 'usermicroservice'
+sourceCompatibility = '11'
+
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class BalanceController {
     @GetMapping(value = "/balance/csv", produces = "text/csv")
     public ResponseEntity generateCsv(@RequestBody List<BalanceSnapshot> snapshots) {
         try {
-            InputStreamResource file = new InputStreamResource(reportGenerator.balanceToCSV(snapshots));
+            InputStreamResource file = new InputStreamResource(BalanceReportGenerator.balanceToCSV(snapshots));
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
