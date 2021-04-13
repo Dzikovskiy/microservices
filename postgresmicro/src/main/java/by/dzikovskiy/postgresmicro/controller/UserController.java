@@ -1,7 +1,6 @@
 package by.dzikovskiy.postgresmicro.controller;
 
-import by.dzikovskiy.postgresmicro.entity.UserDto;
-import by.dzikovskiy.postgresmicro.service.UserServiceImpl;
+import by.dzikovskiy.postgresmicro.dto.UserDto;
 import by.dzikovskiy.postgresmicro.service.UserServiceWithAuditImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +16,13 @@ import java.net.URI;
 @Slf4j
 @AllArgsConstructor
 public class UserController {
-    private final UserServiceImpl userServiceImpl;
+    // private final UserServiceImpl userService;
     private final UserServiceWithAuditImpl userWithAuditService;
 
     @PostMapping("/users")
     public ResponseEntity<UserDto> createUser(@RequestBody final UserDto user) {
         log.debug("Method createUser() called with user:" + user);
-        UserDto result = userWithAuditService.save(user);
+        UserDto result = userWithAuditService.save(user).getUser();
         URI location = URI.create(String.format("/postgres/users/%s", result.getId()));
 
         log.debug("Response with location: " + location + " and user: " + result);
@@ -34,7 +33,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable final Long id) {
         log.debug("Method getUser() called with id: " + id);
 
-        return userServiceImpl.findById(id).map(user -> {
+        return userWithAuditService.findById(id).map(user -> {
             log.debug("Response with OK and user: " + user);
             return ResponseEntity.ok(user);
         }).orElseGet(() -> {
@@ -47,8 +46,8 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@RequestBody final UserDto user) {
         log.debug("Method updateUser() called with id: " + user.getId());
 
-        return userServiceImpl.findById(user.getId()).map(userDto -> {
-            userServiceImpl.update(user);
+        return userWithAuditService.findById(user.getId()).map(userDto -> {
+            userWithAuditService.update(user);
             log.debug("Response with OK and user: " + user);
             return ResponseEntity.ok(user);
         }).orElseGet(() -> {
@@ -61,9 +60,9 @@ public class UserController {
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable final Long id) {
         log.debug("Method deleteUser() called with id: " + id);
 
-        return userServiceImpl.findById(id)
+        return userWithAuditService.findById(id)
                 .map(user -> {
-                    userServiceImpl.deleteById(id);
+                    userWithAuditService.deleteById(id);
                     log.debug("Response with NO_CONTENT. User deleted successfully");
                     return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
                 }).orElseGet(() -> {

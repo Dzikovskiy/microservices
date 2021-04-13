@@ -1,6 +1,7 @@
 package by.dzikovskiy.postgresmicro.service;
 
-import by.dzikovskiy.postgresmicro.entity.AuditDto;
+import by.dzikovskiy.postgresmicro.dao.AuditDao;
+import by.dzikovskiy.postgresmicro.dto.AuditDto;
 import by.dzikovskiy.postgresmicro.mapper.AuditDtoMapper;
 import by.dzikovskiy.postgresmicro.repository.AuditRepository;
 import lombok.AllArgsConstructor;
@@ -13,11 +14,10 @@ import java.util.Date;
 @AllArgsConstructor
 public class AuditService {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private final AuditRepository auditRepository;
-    private final AuditDtoMapper auditDtoMapper;
+    private final AuditDao auditDao;
 
     public AuditDto save(AuditDto auditDto) {
-        return auditDtoMapper.auditToAuditDto(auditRepository.save(auditDtoMapper.auditDtoToAudit(auditDto)));
+        return auditDao.save(auditDto);
     }
 
     public AuditDto generateAudit(final String message) {
