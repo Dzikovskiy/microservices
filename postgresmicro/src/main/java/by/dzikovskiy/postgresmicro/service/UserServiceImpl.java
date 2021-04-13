@@ -1,10 +1,8 @@
 package by.dzikovskiy.postgresmicro.service;
 
-import by.dzikovskiy.postgresmicro.entity.User;
-import by.dzikovskiy.postgresmicro.entity.UserDto;
-import by.dzikovskiy.postgresmicro.entity.Visa;
-import by.dzikovskiy.postgresmicro.mapper.UserDtoMapper;
-import by.dzikovskiy.postgresmicro.repository.UserRepository;
+import by.dzikovskiy.postgresmicro.dao.UserDao;
+import by.dzikovskiy.postgresmicro.dto.UserDto;
+import by.dzikovskiy.postgresmicro.entity.UserResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,38 +12,25 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final UserDtoMapper userDtoMapper;
+    private final UserDao userDao;
 
     @Override
-    public UserDto save(UserDto user) {
-        User savedUser = userRepository.save(userDtoMapper.userDtoToUser(user));
-        for (Visa t : savedUser.getVisas()) {
-            t.setUser(savedUser);
-        }
-
-        savedUser = userRepository.save(savedUser);
-
-        return userDtoMapper.userToUserDto(savedUser);
+    public UserResponse save(UserDto user) {
+        return userDao.save(user);
     }
 
     @Override
     public Optional<UserDto> findById(Long id) {
-        return userRepository.findById(id).map(userDtoMapper::userToUserDto);
+        return userDao.findById(id);
     }
 
     @Override
     public void deleteById(Long id) {
-        userRepository.deleteById(id);
+        userDao.deleteById(id);
     }
 
     @Override
     public UserDto update(UserDto user) {
-        Optional<UserDto> optionalUser = findById(user.getId());
-
-        optionalUser.get().setName(user.getName());
-        optionalUser.get().setVisas(user.getVisas());
-
-        return save(optionalUser.get());
+        return userDao.update(user);
     }
 }

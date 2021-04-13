@@ -1,5 +1,6 @@
-package by.dzikovskiy.postgresmicro.entity;
+package by.dzikovskiy.postgresmicro.dto;
 
+import by.dzikovskiy.postgresmicro.entity.Country;
 import lombok.Data;
 
 @Data

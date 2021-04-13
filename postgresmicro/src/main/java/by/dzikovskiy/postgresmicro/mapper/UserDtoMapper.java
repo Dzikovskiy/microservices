@@ -1,7 +1,7 @@
 package by.dzikovskiy.postgresmicro.mapper;
 
+import by.dzikovskiy.postgresmicro.dto.UserDto;
 import by.dzikovskiy.postgresmicro.entity.User;
-import by.dzikovskiy.postgresmicro.entity.UserDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
