@@ -1,0 +1,21 @@
+#Database Configuration
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: UserFiles
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+#Server
+server:
+  port: 8082
+logging:
+  level:
+    by:
+      dzikovskiy:
+        postgresmicro: DEBUG

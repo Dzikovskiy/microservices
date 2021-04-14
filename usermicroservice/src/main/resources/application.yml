@@ -1,0 +1,14 @@
+#Databases Configuration
+host:
+  url:
+    mongo-db-microservice-host: http://localhost:8082/mongo
+    postgres-microservice-host: http://localhost:8083/postgres
+
+#Server
+server:
+  port: 8081
+logging:
+  level:
+    by:
+      dzikovskiy:
+        postgresmicro: DEBUG
