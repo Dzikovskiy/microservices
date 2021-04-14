@@ -1,0 +1,24 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "1.2-1",
+        "author": "vitaliy",
+        "changes": [
+          {
+            "dropColumn": {
+              "columns": [
+                {
+                  "column": {
+                    "name": "email"
+                  }
+                }
+              ],
+              "tableName": "users"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
