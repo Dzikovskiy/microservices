@@ -1,0 +1,22 @@
+#Database Configuration
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/users}
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.yaml
+
+#Server
+server:
+  port: 8083
+logging:
+  level:
+    by:
+      dzikovskiy:
+        postgresmicro: DEBUG
