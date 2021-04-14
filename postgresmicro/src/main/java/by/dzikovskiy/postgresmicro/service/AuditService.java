@@ -2,8 +2,6 @@ package by.dzikovskiy.postgresmicro.service;
 
 import by.dzikovskiy.postgresmicro.dao.AuditDao;
 import by.dzikovskiy.postgresmicro.dto.AuditDto;
-import by.dzikovskiy.postgresmicro.mapper.AuditDtoMapper;
-import by.dzikovskiy.postgresmicro.repository.AuditRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
