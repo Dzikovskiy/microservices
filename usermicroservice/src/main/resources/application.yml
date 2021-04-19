@@ -4,6 +4,10 @@ host:
     mongo-db-microservice-host: http://localhost:8082/mongo
     postgres-microservice-host: http://localhost:8083/postgres
 
+#Kafka configuration
+kafka:
+    usersTopic: USERS
+    kafkaHost: 127.0.0.1:9092
 #Server
 server:
   port: 8081
