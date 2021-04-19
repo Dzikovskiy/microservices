@@ -1,6 +1,7 @@
 package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.User;
+import by.dzikovskiy.usermicroservice.properties.KafkaConstants;
 import by.dzikovskiy.usermicroservice.properties.KafkaProperties;
 import by.dzikovskiy.usermicroservice.service.UserPhotoRequestService;
 import by.dzikovskiy.usermicroservice.service.UserProfileRequestService;
@@ -21,7 +22,6 @@ import java.net.URI;
 @AllArgsConstructor
 @Slf4j
 public class UserController {
-    private static final String USERS_TOPIC = "USERS";
     private final UserProfileRequestService profileRequestService;
     private final UserPhotoRequestService photoRequestService;
     private final KafkaTemplate<String, User> kafkaTemplate;
@@ -31,7 +31,7 @@ public class UserController {
         return profileRequestService.create(user)
                 .map(_user -> {
                     //saving to kafka microservice
-                    kafkaTemplate.send(USERS_TOPIC, _user);
+                    kafkaTemplate.send(KafkaConstants.USERS_TOPIC, _user);
                     return ResponseEntity
                             .created(URI.create(String.format("/api/users/%s", _user.getId())))
                             .body(_user);
