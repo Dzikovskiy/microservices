@@ -1,6 +1,6 @@
 package by.dzikovskiy.usermicroservice.service;
 
-import by.dzikovskiy.usermicroservice.entity.HostProperties;
+import by.dzikovskiy.usermicroservice.properties.HostProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
