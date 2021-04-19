@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,13 +22,20 @@ import java.net.URI;
 public class UserController {
     private final UserProfileRequestService profileRequestService;
     private final UserPhotoRequestService photoRequestService;
+    private final KafkaTemplate<String, User> kafkaTemplate;
+    private final String TOPIC = "USERS";
+
 
     @PostMapping("/users")
     public ResponseEntity<User> createUserProfile(@RequestBody final User user) {
         return profileRequestService.create(user)
-                .map(_user -> ResponseEntity
-                        .created(URI.create(String.format("/api/users/%s", _user.getId())))
-                        .body(_user))
+                .map(_user -> {
+                    //saving to kafka microservice
+                    kafkaTemplate.send(TOPIC, _user);
+                    return ResponseEntity
+                            .created(URI.create(String.format("/api/users/%s", _user.getId())))
+                            .body(_user);
+                })
                 .orElseGet(() -> ResponseEntity.badRequest()
                         .build());
     }
