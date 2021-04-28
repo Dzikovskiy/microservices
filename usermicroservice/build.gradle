@@ -1,7 +1,34 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.4.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+}
+apply plugin: 'com.google.protobuf'
+
+group = 'by.dzikovskiy'
+version = '0.0.1-SNAPSHOT'
+description = 'usermicroservice'
+sourceCompatibility = '11'
+def grpcVersion = '1.29.0'
+
+sourceSets {
+    src {
+        main {
+            java {
+                srcDirs 'build/generated/source/proto/main/grpc'
+                srcDirs 'build/generated/source/proto/main/java'
+            }
+        }
+    }
 }
 
 repositories {
@@ -12,20 +39,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter:2.4.4'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.4.4'
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.4.4'
-    implementation 'org.apache.kafka:kafka-streams'
     implementation 'org.springframework.kafka:spring-kafka'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.apache.commons:commons-csv:1.8'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.4.4'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.4.4'
+    compile 'net.devh:grpc-client-spring-boot-starter:2.11.0.RELEASE'
+
 }
-
-group = 'by.dzikovskiy'
-version = '0.0.1-SNAPSHOT'
-description = 'usermicroservice'
-sourceCompatibility = '11'
-
 
 configurations {
     compileOnly {
@@ -35,4 +57,21 @@ configurations {
 
 test {
     useJUnitPlatform()
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.12.2'
+    }
+
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
 }

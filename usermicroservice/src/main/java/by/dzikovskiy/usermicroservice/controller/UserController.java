@@ -2,7 +2,6 @@ package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.User;
 import by.dzikovskiy.usermicroservice.properties.KafkaConstants;
-import by.dzikovskiy.usermicroservice.properties.KafkaProperties;
 import by.dzikovskiy.usermicroservice.service.UserPhotoRequestService;
 import by.dzikovskiy.usermicroservice.service.UserProfileRequestService;
 import lombok.AllArgsConstructor;

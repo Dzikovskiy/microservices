@@ -6,9 +6,12 @@ host:
 
 #Kafka configuration
 kafka:
-    usersTopic: USERS
-    kafkaHost: 127.0.0.1:9092
+  usersTopic: USERS
+  kafkaHost: 127.0.0.1:9092
 #Server
+spring:
+  application:
+    name: local-grpc-client
 server:
   port: 8081
 logging:
@@ -16,3 +19,10 @@ logging:
     by:
       dzikovskiy:
         postgresmicro: DEBUG
+grpc:
+  client:
+    local-grpc-server:
+      address: 'static://127.0.0.1:9000'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
