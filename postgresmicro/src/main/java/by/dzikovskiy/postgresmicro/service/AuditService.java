@@ -14,12 +14,12 @@ public class AuditService {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final AuditDao auditDao;
 
-    public AuditDto save(AuditDto auditDto) {
-        return auditDao.save(auditDto);
-    }
-
-    public AuditDto generateAudit(final String message) {
+    public static AuditDto generateAudit(final String message) {
         Date date = new Date();
         return new AuditDto(message + " ; " + dateFormat.format(date));
+    }
+
+    public AuditDto save(AuditDto auditDto) {
+        return auditDao.save(auditDto);
     }
 }
