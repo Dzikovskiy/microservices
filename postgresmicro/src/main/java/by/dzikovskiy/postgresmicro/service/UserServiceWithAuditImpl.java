@@ -11,25 +11,25 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class UserServiceWithAuditImpl implements UserService {
-    private final UserWithAuditDao auditDao;
+    private final UserWithAuditDao userWithAuditDao;
 
     @Override
     public UserResponse save(UserDto user) {
-        return auditDao.save(user);
+        return userWithAuditDao.save(user);
     }
 
     @Override
     public Optional<UserDto> findById(Long id) {
-        return auditDao.findById(id);
+        return userWithAuditDao.findById(id);
     }
 
     @Override
     public void deleteById(Long id) {
-        auditDao.deleteById(id);
+        userWithAuditDao.deleteById(id);
     }
 
     @Override
     public UserDto update(UserDto user) {
-        return auditDao.update(user);
+        return userWithAuditDao.update(user);
     }
 }
