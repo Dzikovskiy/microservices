@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper-test
+    ports:
+      - "2189:2189"
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka-micro-test
+    ports:
+      - "9099:9099"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-test:2189

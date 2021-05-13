@@ -1,0 +1,4 @@
+#Kafka configuration
+kafka:
+  usersTopic: USERS
+  kafkaHost: 127.0.0.1:9099
