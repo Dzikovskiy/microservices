@@ -17,4 +17,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Visa> visas;
+
+    @PrePersist
+    private void prePersist() {
+        visas.forEach( visa -> visa.setUser(this));
+    }
 }
