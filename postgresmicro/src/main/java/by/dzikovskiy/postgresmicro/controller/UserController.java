@@ -1,6 +1,8 @@
 package by.dzikovskiy.postgresmicro.controller;
 
 import by.dzikovskiy.postgresmicro.dto.UserDto;
+import by.dzikovskiy.postgresmicro.entity.Visa;
+import by.dzikovskiy.postgresmicro.repository.VisaRepository;
 import by.dzikovskiy.postgresmicro.service.UserServiceWithAuditImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,13 @@ import java.net.URI;
 @AllArgsConstructor
 public class UserController {
     private final UserServiceWithAuditImpl userWithAuditService;
+    private final VisaRepository visaRepository;
+
+    @PostMapping("/visas")
+    public ResponseEntity<String> createVisa(@RequestBody final Visa visa){
+       Visa visa1 = visaRepository.save(visa);
+        return ResponseEntity.ok("visa id: "+visa1.getId()+"; user id: "+visa1.getUser().getId());
+    }
 
     @PostMapping("/users")
     public ResponseEntity<UserDto> createUser(@RequestBody final UserDto user) {
