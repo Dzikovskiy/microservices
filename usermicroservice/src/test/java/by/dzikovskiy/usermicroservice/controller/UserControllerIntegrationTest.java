@@ -34,19 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = {WireMockInitializer.class})
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestPropertySource(locations="classpath:application-test.yml")
+@TestPropertySource(locations = "classpath:application-test.yml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserControllerIntegrationTest {
 
+    private static User user;
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mockMvc;
-
-    private static User user;
-
     @Autowired
     private WireMockServer wireMockServer;//Warning is ok because bean creates manually in WireMockInitializer
 

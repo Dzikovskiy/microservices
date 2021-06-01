@@ -27,7 +27,7 @@ public class WireMockInitializer implements ApplicationContextInitializer<Config
         });
 
         TestPropertyValues
-                .of(Map.of("host.url.postgres-microservice-host", "http://localhost:" + wireMockServer.port()+"/postgres"))
+                .of(Map.of("host.url.postgres-microservice-host", "http://localhost:" + wireMockServer.port() + "/postgres"))
                 .applyTo(configurableApplicationContext);
     }
 }

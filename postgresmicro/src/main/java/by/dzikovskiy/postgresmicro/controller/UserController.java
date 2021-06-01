@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping("/visas")
     public ResponseEntity<String> createVisa(@RequestBody final Visa visa){
-       Visa visa1 = visaRepository.save(visa);
+        Visa visa1 = visaRepository.save(visa);
         return ResponseEntity.ok("visa id: "+visa1.getId()+"; user id: "+visa1.getUser().getId());
     }
 
