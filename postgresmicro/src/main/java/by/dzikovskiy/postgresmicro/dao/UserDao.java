@@ -22,11 +22,6 @@ public class UserDao {
     @Transactional
     public UserResponse save(UserDto user) {
         User savedUser = userRepository.save(userDtoMapper.userDtoToUser(user));
-        for (Visa t : savedUser.getVisas()) {
-            t.setUser(savedUser);
-        }
-
-        savedUser = userRepository.save(savedUser);
 
         return new UserResponse(userDtoMapper.userToUserDto(savedUser), savedUser.getVisas().size());
     }

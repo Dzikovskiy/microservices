@@ -10,4 +10,5 @@ public class PostgresMicroApplication {
         SpringApplication.run(PostgresMicroApplication.class, args);
     }
 
+
 }

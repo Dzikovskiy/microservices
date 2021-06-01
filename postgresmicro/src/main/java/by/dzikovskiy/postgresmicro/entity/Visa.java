@@ -13,8 +13,6 @@ public class Visa {
     private Long id;
     @Enumerated(EnumType.STRING)
     private Country country;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "user_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private User user;
 }

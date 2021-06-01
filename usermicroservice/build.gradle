@@ -40,13 +40,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:2.4.4'
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.4.4'
     implementation 'org.springframework.kafka:spring-kafka'
-    compileOnly 'org.projectlombok:lombok'
+    implementation'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.projectlombok:lombok'
+    implementation'jakarta.xml.bind:jakarta.xml.bind-api'
+    compile'io.jsonwebtoken:jjwt:0.9.0'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.apache.commons:commons-csv:1.8'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.4.4'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.4.4'
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.28.0"
     compile 'net.devh:grpc-client-spring-boot-starter:2.11.0.RELEASE'
-
 }
 
 configurations {
@@ -63,7 +66,6 @@ protobuf {
     protoc {
         artifact = 'com.google.protobuf:protoc:3.12.2'
     }
-
     plugins {
         grpc {
             artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
