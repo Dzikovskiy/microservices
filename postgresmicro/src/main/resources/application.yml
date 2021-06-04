@@ -1,12 +1,6 @@
 #Database Configuration
-
-
 spring:
   jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
     hibernate:
       ddl-auto: none
   datasource:
@@ -24,9 +18,6 @@ server:
   port: 8083
 logging:
   level:
-    org:
-      hibernate:
-        type: trace
     by:
       dzikovskiy:
         postgresmicro: DEBUG

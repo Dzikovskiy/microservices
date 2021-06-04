@@ -1,49 +1,52 @@
 package by.dzikovskiy.usermicroservice.controller;
 
 
-import by.dzikovskiy.usermicroservice.entity.UserAuth;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import by.dzikovskiy.usermicroservice.security.entity.UserAuth;
+import by.dzikovskiy.usermicroservice.security.entity.request.AuthRequest;
+import by.dzikovskiy.usermicroservice.security.entity.request.RegistrationRequest;
+import by.dzikovskiy.usermicroservice.security.entity.response.AuthResponse;
+import by.dzikovskiy.usermicroservice.security.service.JwtUtils;
+import by.dzikovskiy.usermicroservice.service.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.validation.Valid;
 
 @RestController
+@AllArgsConstructor
 public class UserAuthController {
-    @PostMapping("/auth")
-    public UserAuth login(@RequestParam("username") String username, @RequestParam("password") String password) {
-        String token = getJWTToken(username);
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+
+    @PostMapping("/register")
+    public ResponseEntity<HttpStatus> registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
         UserAuth user = new UserAuth();
-        user.setUser(username);
-        user.setToken(token);
-        user.setPassword(password);
-        return user;
+        user.setPassword(registrationRequest.getPassword());
+        user.setLogin(registrationRequest.getLogin());
+        user.addRole(registrationRequest.getRole());
+        userService.saveUser(user);
+        return ResponseEntity.ok().build();
     }
 
-    private String getJWTToken(String username) {
-        String secretKey = "mySecretKey";
+    @PostMapping("/auth")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest loginRequest) {
 
-        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_USER");
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
 
-        String token = Jwts
-                .builder()
-                .setSubject(username)
-                .claim("authorities",
-                        grantedAuthorities.stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .collect(Collectors.toList()))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 500000))
-                .signWith(SignatureAlgorithm.HS512,
-                        secretKey.getBytes()).compact();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-        return "Bearer " + token;
+        return ResponseEntity.ok(new AuthResponse(jwt));
     }
+
 }

@@ -1,6 +1,7 @@
 package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.BalanceSnapshot;
+import by.dzikovskiy.usermicroservice.security.annotation.UserAndAdminAuthorization;
 import by.dzikovskiy.usermicroservice.service.BalanceReportGenerator;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ public class BalanceController {
     private final String filename = "snapshot.csv";
 
     @GetMapping(value = "/balance/csv", produces = "text/csv")
+    @UserAndAdminAuthorization
     public ResponseEntity generateCsv(@RequestBody List<BalanceSnapshot> snapshots) {
         try {
             InputStreamResource file = new InputStreamResource(BalanceReportGenerator.balanceToCSV(snapshots));
