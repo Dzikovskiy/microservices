@@ -2,6 +2,8 @@ package by.dzikovskiy.usermicroservice.controller;
 
 import by.dzikovskiy.usermicroservice.entity.User;
 import by.dzikovskiy.usermicroservice.properties.KafkaConstants;
+import by.dzikovskiy.usermicroservice.security.annotation.AdminAuthorization;
+import by.dzikovskiy.usermicroservice.security.annotation.UserAndAdminAuthorization;
 import by.dzikovskiy.usermicroservice.service.UserPhotoRequestService;
 import by.dzikovskiy.usermicroservice.service.UserProfileRequestService;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
@@ -26,6 +29,7 @@ public class UserController {
     private final KafkaTemplate<String, User> kafkaTemplate;
 
     @PostMapping("/users")
+    @UserAndAdminAuthorization
     public ResponseEntity<User> createUserProfile(@RequestBody final User user) {
         return profileRequestService.create(user)
                 .map(_user -> {
@@ -40,6 +44,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/users/{id}/photo")
+    @UserAndAdminAuthorization
     public ResponseEntity<HttpStatus> saveUserPhoto(@PathVariable final Long id, @RequestParam("file") MultipartFile file) throws IOException {
         log.debug("Method saveUserPhoto() called with id: " + id);
         return profileRequestService.get(id).map(user -> {
@@ -57,6 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
+    @UserAndAdminAuthorization
     public ResponseEntity<User> getUser(@PathVariable final Long id) {
         log.debug("Method getUser() called with id: " + id);
         return profileRequestService.get(id)
@@ -65,6 +71,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/users/{id}/photo", produces = MediaType.IMAGE_JPEG_VALUE)
+    @UserAndAdminAuthorization
     public ResponseEntity<byte[]> getUserPhoto(@PathVariable final Long id) {
         log.debug("Method getUserPhoto() called with id: " + id);
         return photoRequestService.get(id)
@@ -73,6 +80,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
+    @UserAndAdminAuthorization
     public ResponseEntity<User> updateUserProfile(@RequestBody final User user) {
         log.debug("Method updateUserProfile() called with user: " + user);
         return profileRequestService.update(user)
@@ -81,12 +89,14 @@ public class UserController {
     }
 
     @PutMapping(value = "/users/{id}/photo")
+    @UserAndAdminAuthorization
     public ResponseEntity<HttpStatus> updateUserPhoto(@PathVariable final Long id, @RequestParam("file") MultipartFile file) throws IOException {
         log.debug("Method updateUserPhoto() called with id: " + id);
         return new ResponseEntity<>(photoRequestService.update(file, id));
     }
 
     @DeleteMapping("/users/{id}")
+    @AdminAuthorization
     public void deleteUserById(@PathVariable final Long id) {
         log.debug("Method deleteUserById() called with id: " + id);
         photoRequestService.delete(id);
