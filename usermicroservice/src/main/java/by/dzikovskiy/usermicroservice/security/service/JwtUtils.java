@@ -11,14 +11,12 @@ import java.util.Date;
 @Slf4j
 public class JwtUtils {
     private final String jwtSecret = "mySecret";
-    private final int jwtExpirationMs = 500000;
+    private final int jwtExpirationMs = 30000;
 
-    public String generateJwtToken(Authentication authentication) {
-
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    public String generateJwtToken(String login) {
 
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
+                .setSubject((login))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
