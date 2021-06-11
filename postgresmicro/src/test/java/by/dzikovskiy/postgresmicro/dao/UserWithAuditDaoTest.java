@@ -26,17 +26,14 @@ import static org.mockito.Mockito.times;
 @AutoConfigureMockMvc
 class UserWithAuditDaoTest {
 
-    @Autowired
-    private UserWithAuditDao userWithAuditDao;
-
-    @MockBean
-    private AuditService auditService;
-
-    @MockBean
-    private UserDao userDao;
-
     private static UserDto userDto;
     private static UserResponse userResponse;
+    @Autowired
+    private UserWithAuditDao userWithAuditDao;
+    @MockBean
+    private AuditService auditService;
+    @MockBean
+    private UserDao userDao;
 
     @BeforeAll
     static void setUp() {

@@ -2,7 +2,6 @@ package by.dzikovskiy.usermicroservice.security.service;
 
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

@@ -26,10 +26,10 @@ import static org.mockito.Mockito.times;
 @AutoConfigureMockMvc
 class UserServiceWithAuditImplTest {
 
-    @Autowired
-    private UserServiceWithAuditImpl userServiceWithAudit;
     private static UserDto userDto;
     private static UserResponse userResponse;
+    @Autowired
+    private UserServiceWithAuditImpl userServiceWithAudit;
     @MockBean
     private UserWithAuditDao userWithAuditDao;
 

@@ -1,11 +1,14 @@
 package by.dzikovskiy.postgresmicro.controller;
 
 import by.dzikovskiy.postgresmicro.dto.UserDto;
+import by.dzikovskiy.postgresmicro.entity.UserPageResponse;
 import by.dzikovskiy.postgresmicro.entity.Visa;
 import by.dzikovskiy.postgresmicro.repository.VisaRepository;
 import by.dzikovskiy.postgresmicro.service.UserServiceWithAuditImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,9 +25,9 @@ public class UserController {
     private final VisaRepository visaRepository;
 
     @PostMapping("/visas")
-    public ResponseEntity<String> createVisa(@RequestBody final Visa visa){
+    public ResponseEntity<String> createVisa(@RequestBody final Visa visa) {
         Visa visa1 = visaRepository.save(visa);
-        return ResponseEntity.ok("visa id: "+visa1.getId()+"; user id: "+visa1.getUser().getId());
+        return ResponseEntity.ok("visa id: " + visa1.getId() + "; user id: " + visa1.getUser().getId());
     }
 
     @PostMapping("/users")
@@ -48,6 +51,17 @@ public class UserController {
             log.debug("Response with NOT_FOUND. User with the given id is not in the repository");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         });
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<UserPageResponse> getUser(@RequestParam(defaultValue = "0") final int page,
+                                                    @RequestParam(defaultValue = "5") final int size) {
+        log.debug("Method getUser() called with page: " + page + " and size: " + size);
+
+        Pageable pageRequest = PageRequest.of(page, size);
+        UserPageResponse response = userWithAuditService.findAll(pageRequest);
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/users/{id}")
