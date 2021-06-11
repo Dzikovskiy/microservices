@@ -3,10 +3,11 @@ package by.dzikovskiy.postgresmicro.dao;
 import by.dzikovskiy.postgresmicro.dto.UserDto;
 import by.dzikovskiy.postgresmicro.entity.User;
 import by.dzikovskiy.postgresmicro.entity.UserResponse;
-import by.dzikovskiy.postgresmicro.entity.Visa;
 import by.dzikovskiy.postgresmicro.mapper.UserDtoMapper;
 import by.dzikovskiy.postgresmicro.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,10 @@ public class UserDao {
 
     public Optional<UserDto> findById(Long id) {
         return userRepository.findById(id).map(userDtoMapper::userToUserDto);
+    }
+
+    public Page<User> findAll(Pageable page) {
+        return userRepository.findAll(page);
     }
 
     public void deleteById(Long id) {

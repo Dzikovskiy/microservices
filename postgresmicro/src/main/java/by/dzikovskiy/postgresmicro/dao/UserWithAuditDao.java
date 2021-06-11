@@ -1,9 +1,12 @@
 package by.dzikovskiy.postgresmicro.dao;
 
 import by.dzikovskiy.postgresmicro.dto.UserDto;
+import by.dzikovskiy.postgresmicro.entity.User;
 import by.dzikovskiy.postgresmicro.entity.UserResponse;
 import by.dzikovskiy.postgresmicro.service.AuditService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,12 @@ public class UserWithAuditDao {
         Optional<UserDto> user = userDao.findById(id);
         auditService.save(AuditService.generateAudit("Method findById() called with id:" + id));
         return user;
+    }
+
+    public Page<User> findAll(Pageable page) {
+        Page<User> users = userDao.findAll(page);
+        auditService.save(AuditService.generateAudit("Method findAll() called with page:" + page));
+        return users;
     }
 
     @Transactional

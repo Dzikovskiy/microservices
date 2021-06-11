@@ -2,9 +2,8 @@ package by.dzikovskiy.usermicroservice.security.entity;
 
 import lombok.Data;
 
-import java.time.Instant;
-
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity(name = "refreshtoken")
 @Data

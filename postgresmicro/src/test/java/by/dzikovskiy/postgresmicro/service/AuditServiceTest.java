@@ -19,11 +19,9 @@ import static org.mockito.BDDMockito.given;
 @AutoConfigureMockMvc
 class AuditServiceTest {
 
+    private static AuditDto auditDto;
     @MockBean
     private AuditDao auditDao;
-
-    private static AuditDto auditDto;
-
     @Autowired
     private AuditService auditService;
 
