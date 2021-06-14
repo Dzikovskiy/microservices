@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 
-@SpringBootTest(classes = UserServiceWithAuditImpl.class)
+@SpringBootTest
 @AutoConfigureMockMvc
 class UserServiceWithAuditImplTest {
 
