@@ -41,6 +41,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers(HttpMethod.POST, "/register").permitAll()
                 .antMatchers(HttpMethod.POST, "/refreshtoken").permitAll()
+                //TODO make auth between client and admin app, because that security
+                .antMatchers("/admin/*","/actuator/**","/instances").permitAll()
                 .antMatchers("/h2-console/*").permitAll()
                 .anyRequest().authenticated();
         http.headers().frameOptions().sameOrigin();

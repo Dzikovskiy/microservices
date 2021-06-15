@@ -10,6 +10,8 @@ spring:
       enabled: true
       max-file-size: 20MB
       max-request-size: 20MB
+  application:
+    name: mongo-service
 
 #Server
 server:
@@ -19,3 +21,20 @@ logging:
     by:
       dzikovskiy:
         postgresmicro: DEBUG
+
+#Eurika and Spring admin
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_URL:http://localhost:8761}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+management:
+  endpoints:
+    web.exposure.include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
