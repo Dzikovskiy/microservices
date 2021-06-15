@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<UserPageResponse> getUser(@RequestParam(defaultValue = "0") final int page,
+    public ResponseEntity<UserPageResponse> getUsers(@RequestParam(defaultValue = "0") final int page,
                                                     @RequestParam(defaultValue = "5") final int size) {
         log.debug("Method getUser() called with page: " + page + " and size: " + size);
 
