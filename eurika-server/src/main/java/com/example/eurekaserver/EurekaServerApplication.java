@@ -1,4 +1,4 @@
-package com.example.eurikaserver;
+package com.example.eurekaserver;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
@@ -8,10 +8,10 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 @SpringBootApplication
 @EnableEurekaServer
 @EnableAdminServer
-public class EurikaServerApplication {
+public class EurekaServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EurikaServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaServerApplication.class, args);
+    }
 
 }
