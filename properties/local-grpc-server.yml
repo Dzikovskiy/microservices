@@ -14,10 +14,7 @@ spring:
   application:
     name: local-grpc-server
   config:
-    import: optional:configserver:http://localhost:8888
-  cloud:
-    config:
-      uri: http://localhost:8888
+    import: optional:configserver:http://localhost:8086
 #  cloud:
 #    config:
 #      enabled: false
@@ -52,4 +49,4 @@ management:
       show-details: ALWAYS
 
 text:
-  copyright: Innocopy right (r)
+  copyright: Dev right (r)

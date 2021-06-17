@@ -1,7 +1,6 @@
 server:
   port: ${PORT:8761}
 
-
 eureka:
   client:
     registryFetchIntervalSeconds: 5
@@ -29,4 +28,3 @@ spring:
   boot:
     admin:
       context-path: /admin  #A different context path for Spring boot admin server has been provided avoiding conflict with eureka
-
