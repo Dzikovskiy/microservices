@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  postgresmicro:
+    ports:
+      - 8083:8083
+    image: 'postgresmicro:latest'
+    build:
+      context: .
+    container_name: postgresmicro
+    depends_on:
+      - db
+      - eurekaserver
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/users
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - eureka.client.serviceUrl.defaultZone=http://eurekaserver:8761/eureka/
+
+  eurekaserver:
+    ports:
+      - 8761:8761
+    image: 'eurekaserver:latest'
+    build:
+      context: .
+    container_name: eurekaserver
+    environment:
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=users
