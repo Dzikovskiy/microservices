@@ -1,0 +1,55 @@
+#Database Configuration
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+  liquibase:
+    enabled: false
+    change-log: classpath:db/changelog/changelog-master.yaml
+  application:
+    name: local-grpc-server
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      uri: http://localhost:8888
+      discovery:
+        enabled: false
+#Server
+server:
+  port: 8083
+logging:
+  level:
+    by:
+      dzikovskiy:
+        postgresmicro: DEBUG
+grpc:
+  server:
+    port: 9000
+    address: '127.0.0.1'
+
+#Eurika and Spring admin
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_URL:http://localhost:8761}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    enabled: false
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+management:
+  endpoints:
+    web.exposure.include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+text:
+  copyright: Innocopy right (r)
